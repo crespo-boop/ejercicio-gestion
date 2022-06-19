@@ -46,7 +46,7 @@ language plpgsql
 
 create trigger trigg_2020 after insert or delete on MATRICULA
 for each row
-execute procedure trigg_1()
+execute procedure trigg_2020()
 
 
 insert into MATRICULA (ID_MATRICULA,ID_ALUMNO, FECHA_MATRICULA, NIVEL_MATRICULA)
