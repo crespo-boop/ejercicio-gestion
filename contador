@@ -1,0 +1,69 @@
+
+create table ALUMNO (
+   ID_ALUMNO        INT4                 not null,
+   NOMBRES_ALUMNO   VARCHAR(44)          	 null,
+   FECHAINGRESO_ALUMNO DATE                	 null,
+   NUMREPETICIONES_ALUMNO serial      not null,
+   constraint PK_ALUMNO primary key (ID_ALUMNO)
+);
+
+create table MATRICULA (
+   ID_MATRICULA         INT4                 not null,
+   ID_ALUMNO            INT4                 not null,
+   FECHA_MATRICULA      DATE                 null,
+   NIVEL_MATRICULA      INT4                 null,
+  constraint PK_MATRICULA primary key (ID_MATRICULA)
+
+);
+
+alter table MATRICULA
+add constraint FK_MATRICUL_TIENE_ALUMNOS foreign key (ID_ALUMNO)
+references ALUMNO (ID_ALUMNO)
+on delete restrict on update restrict;
+
+
+insert into ALUMNO (ID_ALUMNO , NOMBRES_ALUMNO , FECHAINGRESO_ALUMNO , NUMREPETICIONES_ALUMNO )
+values (777, 'Kevin Crespo','30-09-2019',0)
+
+
+insert into MATRICULA (ID_MATRICULA,ID_ESTUDIANTE, FECHA_MATRICULA, NIVEL_MATRICULA)
+values (20,777,'30-09-2019',1)
+
+
+
+create function trigg_2020() returns trigger
+as 
+$$
+begin 
+UPDATE ALUMNO SET NUMREPETICIONES_ALUMNO = NUMREPETICIONES_ALUMNO+1
+WHERE ID_ALUMNO=NEW.ID_ALUMNO;
+UPDATE ALUMNO SET NUMREPETICIONES_ALUMNO = NUMREPETICIONES_ALUMNO-1
+WHERE ID_ALUMNO=OLD.ID_ALUMNO and NUMREPETICIONES_ALUMNO>0;
+return new;
+end
+$$
+language plpgsql
+
+create trigger trigg_2020 after insert or delete on MATRICULA
+for each row
+execute procedure trigg_1()
+
+
+insert into MATRICULA (ID_MATRICULA,ID_ALUMNO, FECHA_MATRICULA, NIVEL_MATRICULA)
+			values  
+					(21,777,'30-09-2019',1),
+					(22,777,'28-10-2020',1),
+					(23,777,'17-09-2021',1);
+
+
+select * from ALUMNO
+select * from MATRICULA
+
+
+delete from MATRICULA where ID_ALUMNO=777 AND ID_MATRICULA=20
+delete from MATRICULA where ID_ALUMNO=777 AND ID_MATRICULA=21
+delete from MATRICULA where ID_ALUMNO=777 AND ID_MATRICULA=22
+delete from MATRICULA where ID_ALUMNO=777 AND ID_MATRICULA=23
+
+
+
